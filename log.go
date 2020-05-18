@@ -3,7 +3,6 @@ package log
 import (
 	stdlog "log"
 	"os"
-	"strings"
 )
 
 //Log Levels and Strings
@@ -16,7 +15,7 @@ const (
 	LevelDebug = "Debug"
 
 	//ErrStr - String representing Error in logs
-	ErrStr = "ER"
+	ErrStr = "\033[1;31mERR\033[0m"
 	//InfoStr - String representing info in logs
 	InfoStr = "INF"
 	//DebugStr - String representing Debug in logs
@@ -127,7 +126,10 @@ func (l *Logger) Debug(ctx ...string) PrintFunc {
 //uses | to split contexts
 //uses <> to wrap actual log message
 func (l *Logger) logWrite(level string, ctx ...string) PrintFunc {
-	prefix := level + "[" + strings.Join(ctx, "|") + "]" // Add Logging Level and [headers]
+	prefix := level + " "
+	for i := 0; i+1 <= len(ctx)-1; i = i + 2 { //TODO Optimize
+		prefix = prefix + ctx[i] + "=" + ctx[i+1] + " "
+	}
 	return func(format string, args ...interface{}) {
 		l.log.Printf(prefix+"<"+format+">", args...) // Add Log message within <>
 	}
