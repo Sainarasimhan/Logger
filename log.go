@@ -45,7 +45,7 @@ type Cfg struct {
 
 //Logger - Logger with levels; uses standard logger internally
 type Logger struct {
-	log                      *stdlog.Logger
+	*stdlog.Logger
 	errorFn, debugFn, infoFn LoggerFunc
 }
 
@@ -70,7 +70,7 @@ func New(c Cfg) *Logger {
 		c.Flags)
 
 	//Set All Methods to NoOpLogger, by Default
-	logger := &Logger{log: l,
+	logger := &Logger{Logger: l,
 		errorFn: NoOpFn,
 		debugFn: NoOpFn,
 		infoFn:  NoOpFn}
@@ -131,11 +131,6 @@ func (l *Logger) logWrite(level string, ctx ...string) PrintFunc {
 		prefix = prefix + ctx[i] + "=" + ctx[i+1] + " "
 	}
 	return func(format string, args ...interface{}) {
-		l.log.Printf(prefix+"<"+format+">", args...) // Add Log message within <>
+		l.Printf(prefix+"<"+format+">", args...) // Add Log message within <>
 	}
-}
-
-//Fatal - calls stdlog fatal func
-func Fatal(args ...interface{}) {
-	stdlog.Fatal(args...)
 }
